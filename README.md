@@ -8,6 +8,6 @@
 Поиск по карточкам через GET-запрос. Отображение результата поиска на той же странице, что и с карточками
 
 <p float="left">
-  <img src="main-page.png" width="100" />
-  <img src="description-page.png" width="100" /> 
+  <img src="main-page.png" width="400" />
+  <img src="description-page.png" width="400" /> 
 </p>
