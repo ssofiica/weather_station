@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block sort %}
+    <div class="sort">
+        <button class="sort-button">Сортировка</button>
+        <div class="sort-content">
+            <a href="">А-Я</a>
+            <a href="">Я-А</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block form %}
+    <form action="{% url 'main_url' %}" method="get">
+        <input type="text" name="value" placeholder="Введите заголовок" value="{{ search_value }}"> 
+        <button type="submit">Поиск</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+<div class="cards">
+{% for phenom in data %}
+    <div class="card">
+        <img src="{% static '' %}{{ phenom.image }}" class="card-image">
+        <div class="card-down">
+            <p class="card-title">{{ phenom.title }}</p>
+            <a href="{% url 'phenom_url' phenom.id %}" class="card-button">Подробнее</a>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block form %}
+    <form action="{% url 'main_url' %}" method="get">
+        <input type="text" name="value" placeholder="Введите заголовок" value="{{ search_value }}"> 
+        <button type="submit">Поиск</button>
+    </form>
+{% endblock %}
+    
+{% block content %}
+    <div class="d-card">
+      <img src="{% static '' %}{{ data.image }}" class="d-image">
+      <span class="text">
+        <p>{{ data.title }}</p>
+        <h5>{{ data.description }}</h5>
+        <h5>Единицы измерения: {{ data.unit}}</h5>
+      </span>
+    </div>
+{% endblock %}
