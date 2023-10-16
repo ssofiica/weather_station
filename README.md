@@ -7,6 +7,5 @@
 - пользователей (данные, статус - модератор/пользователь)
 
 <p float="left">
-  <img src="" width="400" />
-  <img src="" width="400" /> 
+  <img src="ER diagram.png" />
 </p>
