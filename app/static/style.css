@@ -94,19 +94,14 @@ body{
     justify-content: left;
 }
 .card{
-  background-color: #ededed;
-  /* граница 
-  border: 1px solid #ebebeb;*/
-  /* рисуем границу по периметру карточки 
-  box-sizing: border-box;*/
-  width: 236px;
-  height: 210px;
-  border-radius: 20px;
-  /* включаем гибкую вёрстку */
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-  margin-right: 18px;
+    background-color: #ededed;
+    width: 236px;
+    height: 230px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-right: 18px;
 }
 .card:nth-child(4n){
     margin-right: 0px;
@@ -123,9 +118,9 @@ body{
 }
 .card-down{
     margin-top: 20px;
-    width: 198px;
     margin-left: 19px;
     margin-right: 19px;
+    width: 198px;
     display: flex;
     justify-content: space-between;
 }
@@ -135,7 +130,6 @@ body{
     font-size: 22px;
 }
 .card-button{
-    display: inline-block;
     padding-top: 6px;
     background-color: #383838;
     border: none;
@@ -153,6 +147,16 @@ body{
     color: #242424;
     background-color: #c4fea4;
     border: 1px solid #242424;
+}
+.del-button{
+    font-family: 'Raleway';
+    font-weight: 400;
+    font-size: 16px;
+    color: #fa2d2d;
+    text-decoration: none;
+    margin-right: 19px;
+    margin-top: 8px;
+    text-align: right;
 }
 .d-card{
     width: 650px;

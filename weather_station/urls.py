@@ -23,3 +23,4 @@ urlpatterns = [
     path('', views.GetPhenoms, name='main_url'),
     path('phenom/<int:id>/', views.GetPhenom, name='phenom_url'),
 ]
+

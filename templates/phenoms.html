@@ -24,9 +24,10 @@
     <div class="card">
         <img src="{% static '' %}{{ phenom.image }}" class="card-image">
         <div class="card-down">
-            <p class="card-title">{{ phenom.title }}</p>
-            <a href="{% url 'phenom_url' phenom.id %}" class="card-button">Подробнее</a>
+            <p class="card-title">{{ phenom.phenom_name }}</p>
+            <a href="{% url 'phenom_url' phenom.phenom_id %}" class="card-button">Подробнее</a>
         </div>
+        <a href="{% url 'main_url' %}?phenom_id={{ phenom.phenom_id }}" class="del-button"> Удалить</a>
     </div>
 {% endfor %}
 </div>

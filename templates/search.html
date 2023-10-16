@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% if not data %}
+    <div class="header"><h6>Не найдено</h6></div>
+{% else %}
+    <div class="card">
+        <img src="{% static '' %}{{ data.image }}" class="card-image">
+        <div class="card-down">
+            <p class="card-title">{{ data.title }}</p>
+            <a href="{% url 'phenom_url' data.id %}" class="card-button">Подробнее</a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
