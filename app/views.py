@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from app.serializers import PhenomensSerializer, PhenomRecordSerializer, RequestSerializer, UserSerializer, DraftSerializer
+from app.serializers import PhenomensSerializer, PhenomRecordSerializer, RequestSerializer, UserSerializer, DraftSerializer, UserLoginSerializer
 from app.models import Phenomens, PhenomRecord, Request, Users
 from datetime import date
 from django.utils import timezone
@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import authentication_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
-from app.permissions import IsAdmin, IsCreator
+from app.permissions import IsAdmin, IsCreator, IsAuth
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.conf import settings
@@ -113,7 +113,7 @@ def add_image(request, id):
     
 #@swagger_auto_schema(method='post', request_body=PhenomRecordSerializer)
 @api_view(['Post'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsCreator])
 def add_phenom_to_request(request, id):
     """
     добавление явления в заявку
@@ -128,18 +128,16 @@ def add_phenom_to_request(request, id):
         else:
             return Response({'error': 'Заявка должна быть черновиком'}, status=status.HTTP_403_FORBIDDEN)
     else:
-        ssid = request.COOKIES["session_id"]
+        ssid = request.COOKIES.get["session_id"]
         try:
             email = session_storage.get(ssid).decode('utf-8')
             User = Users.objects.get(email=email)
         except: return Response('Сессия не найдена')
-        Moderator = Users.objects.get(email="user4@gmail.com")
         new_request = Request.objects.create(
             user = User,
             request_data = date.today(),
             status = 'Черновик',
             create_date = timezone.now(),
-            moderator = Moderator
         )
         new_record = PhenomRecord.objects.create(phenom = input_phenom, request = new_request, value = phenom_value)
     serializer = PhenomRecordSerializer(new_record)
@@ -147,8 +145,7 @@ def add_phenom_to_request(request, id):
 
 class RequestList(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    print(permission_classes[0])
+    permission_classes = [IsAuth]
     model_class = Request
     serializer_class = RequestSerializer
 
@@ -179,12 +176,22 @@ class RequestList(APIView):
             req = req.filter(status=status)
         
         serializer = self.serializer_class(req.all(), many=True)
+        tmp = serializer.data
+        for i, wa in enumerate(serializer.data):
+            user = get_object_or_404(Users, user_id=wa['user'])
+            tmp[i]['user'] = '{} {}'.format(user.user_name, user.user_surname)
+           
+            if wa['moderator'] is None:
+                tmp[i]['moderator'] = 'нет'
+            else:  
+                moderator = Users.objects.get(user_id=wa['moderator'])
+                tmp[i]['moderator'] = '{} {}'.format(moderator.user_name, moderator.user_surname)
         return Response(serializer.data)
     
 
 class RequestDetail(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuth]
     model_class = Request
     serializer_class = RequestSerializer
     record_class = PhenomRecord
@@ -197,6 +204,15 @@ class RequestDetail(APIView):
         req = self.model_class.objects.exclude(status='Удален').filter(request_id=id)
         if (req):
             serializer = self.record_serial(req, many=True)
+            tmp = serializer.data
+            for i, wa in enumerate(serializer.data):
+                user = get_object_or_404(Users, user_id=wa['user'])
+                tmp[i]['user'] = '{} {}'.format(user.user_name, user.user_surname)
+                if wa['moderator'] is None:
+                    tmp[i]['moderator'] = 'нет'
+                else:  
+                    moderator = Users.objects.get(user_id=wa['moderator'])
+                    tmp[i]['moderator'] = '{} {}'.format(moderator.user_name, moderator.user_surname)
             return Response(serializer.data)
         else: Response({'error': 'Такой заявки нет'}, status=status.HTTP_404_NOT_FOUND)
     
@@ -231,9 +247,16 @@ def moderator_change_status(request, id):
     req = get_object_or_404(Request, request_id=id)
     current_status = req.status
     input_status = request.data.get("status")
+    ssid = request.COOKIES["session_id"]
+    try:
+        email = session_storage.get(ssid).decode('utf-8')
+        current_user = Users.objects.get(email=email)
+    except:
+        return Response('Сессия не найдена')
     if (current_status == 'Сформирован'):
         if (input_status == 'Отклонен' or input_status == 'Завершен'):
             req.status = input_status
+            req.moderator = current_user
             req.end_date = timezone.now()
             req.save()
         else:
@@ -252,6 +275,7 @@ def creator_change_status(request, id):
     """
     #statuses = ['Черновик', 'Сформирован']
     ssid = request.COOKIES["session_id"]
+    print(ssid)
     try:
         email = session_storage.get(ssid).decode('utf-8')
         current_user = Users.objects.get(email=email)
@@ -343,7 +367,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return response
         return Response({'status': 'Error', 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
-@swagger_auto_schema(method='post', request_body=UserSerializer)
+@swagger_auto_schema(method='post', request_body=UserLoginSerializer)
 @api_view(['Post'])
 @permission_classes([AllowAny])
 def login_view(request):
@@ -369,7 +393,7 @@ def login_view(request):
         return HttpResponse("you are not registred", status=400)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuth])
 def logout_view(request):
     ssid = request.COOKIES["session_id"]
     if session_storage.exists(ssid):

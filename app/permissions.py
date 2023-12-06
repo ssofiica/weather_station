@@ -5,9 +5,17 @@ from django.conf import settings
 
 session_storage = redis.StrictRedis(host='127.0.0.1', port='6379')
 
+class IsAuth(permissions.BasePermission):
+    def has_permission(self, request, view):
+        access_token = request.COOKIES.get("session_id", None)
+        if (access_token): 
+            return True
+        else: return False
+
 class IsAdmin(permissions.BasePermission): 
     def has_permission(self, request, view):
-        access_token = request.COOKIES["session_id"]
+        access_token = request.COOKIES.get("session_id", None)
+        print(access_token)
         if access_token is None: 
             return False 
         try: 
@@ -19,7 +27,7 @@ class IsAdmin(permissions.BasePermission):
      
 class IsCreator(permissions.BasePermission): 
     def has_permission(self, request, view): 
-        access_token = request.COOKIES["session_id"]
+        access_token = request.COOKIES.get("session_id", None)
         print(access_token)
         if access_token is None: 
             return False 

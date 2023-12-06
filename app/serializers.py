@@ -9,6 +9,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.Users
         fields = ['user_name','user_surname','email', 'password', 'is_staff', 'is_superuser']
 
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+
 class PhenomensSerializer(serializers.ModelSerializer):
     class Meta:
         # Модель, которую мы сериализуем
@@ -36,10 +40,10 @@ class PhenomRecordSerializer(serializers.ModelSerializer):
 
     def get_phenomens(self, obj):
         records = models.PhenomRecord.objects.filter(request=obj)
-        print(records)
+        #print(records)
         tmp = records.values_list('phenom', flat=True)
         phenoms = models.Phenomens.objects.filter(phenom_id__in = tmp)
-        print(phenoms)
+        #print(phenoms)
         serializer = PhenomensSerializer(phenoms, many = True)
         return serializer.data
 
