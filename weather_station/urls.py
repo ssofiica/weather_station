@@ -36,6 +36,7 @@ urlpatterns = [
     path(r'requests/<int:id>/', views.RequestDetail.as_view(), name='request_methods'),
     path(r'requests/<int:id>/moderator_change_status/', views.moderator_change_status, name='moderator_change_status'),
     path(r'requests/<int:id>/creator_change_status/', views.creator_change_status, name='creator_change_status'),
+    path(r'requests/temperature/<int:id>/', views.request_async, name='async'),
 
     # #методы для заявок
     path(r'phenom_record/edit_value/<int:id>/<int:req>/', views.edit_value, name='edit_value'),

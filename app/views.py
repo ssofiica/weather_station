@@ -15,15 +15,19 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import authentication_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
-from app.permissions import IsAdmin, IsCreator, IsAuth
+from app.permissions import IsAdmin, IsCreator, IsAuth, IsAsync
 from rest_framework import viewsets
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.conf import settings
 import redis
+import json
+import requests
 import uuid
 from django.contrib.sessions.models import Session
 
 session_storage = redis.StrictRedis(host='127.0.0.1', port='6379')
+go_url = 'http://localhost:8080/set_temperature'
+key = "a4e0oinhl932as15"
 
 class PhenomensList(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -236,6 +240,19 @@ class RequestDetail(APIView):
         req.save()
         return Response(status=status.HTTP_200_OK)
 
+#температура 
+@api_view(['Put'])
+@permission_classes([IsAsync])
+def request_async(request, id):
+    data = json.loads(request.body)
+    print(data["temperature"])
+    req = get_object_or_404(Request, request_id=id)
+    req.temperature = data["temperature"]
+    serializer = RequestSerializer(req, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else: return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #отклоняет, завершает
 @api_view(['Put'])
@@ -290,6 +307,12 @@ def creator_change_status(request, id):
                 if (current_status == 'Черновик'):
                     req.status = input_status
                     req.approve_date = timezone.now()
+
+                    #данные для асинхронного сервиса
+                    data = {'id': req.request_id}
+                    # Отправка POST-запроса на сервис
+                    response = requests.post(go_url, data=data)
+                    print(response.status_code)
             elif (input_status == 'Черновик'):
                 if (current_status == 'Отклонен'):
                     req.status = input_status

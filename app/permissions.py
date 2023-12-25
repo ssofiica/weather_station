@@ -1,10 +1,20 @@
 from rest_framework import permissions
 from app.models import *
 import redis
+import json
 from django.conf import settings
 
 session_storage = redis.StrictRedis(host='127.0.0.1', port='6379')
+key = "a4e0oinhl932as15"
 
+class IsAsync(permissions.BasePermission):
+    def has_permission(self, request, view):
+        data = json.loads(request.body)
+        input_key = data["key"]
+        if (input_key==key):
+            return True
+        else: return False
+        
 class IsAuth(permissions.BasePermission):
     def has_permission(self, request, view):
         access_token = request.COOKIES.get("session_id", None)

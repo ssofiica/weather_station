@@ -33,7 +33,8 @@ class Request(models.Model):
     approve_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     moderator = models.ForeignKey('Users', models.DO_NOTHING, db_column='moderator', related_name='request_moderator_set', blank=True, null=True)
-    
+    temperature = models.IntegerField()
+
     class Meta:
         managed = False
         db_table = 'request'
