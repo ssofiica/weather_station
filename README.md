@@ -4,7 +4,7 @@
 
 #### Backend: текущий репозиторий
 #### Frontend: https://github.com/ssofiica/weather_station_frontend
-#### Pages: https://ssofiica.github.io/weather_station_pages/
+#### Pages (интерфейс гостя): https://ssofiica.github.io/weather_station_pages/
 #### https://github.com/ssofiica/weather_station_pages
 #### Async: https://github.com/ssofiica/weather_station_async
 #### Mobile: https://github.com/ssofiica/weather_station_native
