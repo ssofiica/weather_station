@@ -24,12 +24,15 @@ class IsAuth(permissions.BasePermission):
 
 class IsAdmin(permissions.BasePermission): 
     def has_permission(self, request, view):
+        print(request)
         access_token = request.COOKIES.get("session_id", None)
         print(access_token)
         if access_token is None: 
+            print(access_token)
             return False 
         try: 
             username = session_storage.get(access_token).decode('utf-8') 
+            print(username)
         except Exception as e: 
             return False 
         user = Users.objects.get(email=username)
@@ -49,7 +52,7 @@ class IsCreator(permissions.BasePermission):
             return False 
         user = Users.objects.get(email=username) 
         print("super : {}".format(user.is_superuser))
-        if (user.is_staff == True and user.is_superuser == False):
+        if (user.is_superuser == False):
             print("true")
             return True
         else: return False

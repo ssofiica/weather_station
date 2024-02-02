@@ -39,12 +39,12 @@ urlpatterns = [
     path(r'requests/temperature/<int:id>/', views.request_async, name='async'),
 
     # #методы для заявок
-    path(r'phenom_record/edit_value/<int:id>/<int:req>/', views.edit_value, name='edit_value'),
+    path(r'phenom_record/edit_value/<int:id>/<int:req_id>/', views.edit_value, name='edit_value'),
     path(r'phenom_record/delete/<int:id>/<int:req>/', views.delete_record, name='delete_record'),
     
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('login/',  views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
+    path(r'api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path(r'login/',  views.login_view, name='login'),
+    path(r'logout/', views.logout_view, name='logout'),
     path('admin/', admin.site.urls),
 ]

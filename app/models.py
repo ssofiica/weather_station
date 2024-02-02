@@ -16,7 +16,7 @@ class Phenomens(models.Model):
     phenom_id = models.AutoField(primary_key=True)
     phenom_name = models.CharField(max_length=30)
     status = models.CharField(max_length=15, blank=True, null=True)
-    image = models.BinaryField(blank=True, null=True)
+    image = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     unit = models.CharField(max_length=30, blank=True, null=True)
 
